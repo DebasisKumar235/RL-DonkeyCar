@@ -54,7 +54,7 @@ class Autoencoder(nn.Module):
         :return:
         """
         return self.encode(preprocess_image(raw_image, convert_to_rgb=False, normalize=False))
-
+        
     def encode(self, observation: np.ndarray) -> np.ndarray:
         """
         Normalize and encode a cropped image.

@@ -34,7 +34,12 @@ if args.seed is not None:
 if not args.folder.endswith("/"):
     args.folder += "/"
 
-autoencoder = load_ae(args.ae_path)
+latent_sizes = args.ae_path.split(',')
+
+autoencoders = []
+for sz in latent_sizes:
+    autoencoder = load_ae(f'ae-{sz}-hpc.pkl')
+    autoencoders.append( autoencoder )
 
 images = [im for im in os.listdir(args.folder) if im.endswith(".jpg")]
 images = np.array(images)
@@ -45,20 +50,20 @@ if args.augment:
     augmenter = get_image_augmenter()
 
 # Small benchmark
-start_time = time.time()
-for _ in range(args.n_samples):
-    # Load test image
-    image_idx = np.random.randint(n_samples)
-    image_path = args.folder + images[image_idx]
-    image = cv2.imread(image_path)
-    input_image = image
+# start_time = time.time()
+# for _ in range(args.n_samples):
+#     # Load test image
+#     image_idx = np.random.randint(n_samples)
+#     image_path = args.folder + images[image_idx]
+#     image = cv2.imread(image_path)
+#     input_image = image
 
-    encoded = autoencoder.encode_from_raw_image(input_image)
-    reconstructed_image = autoencoder.decode(encoded)[0]
+#     encoded = autoencoder.encode_from_raw_image(input_image)
+#     reconstructed_image = autoencoder.decode(encoded)[0]
 
-time_per_image = (time.time() - start_time) / args.n_samples
-print(f"{time_per_image:.4f}s")
-print(f"{1 / time_per_image:.4f}Hz")
+# time_per_image = (time.time() - start_time) / args.n_samples
+# print(f"{time_per_image:.4f}s")
+# print(f"{1 / time_per_image:.4f}Hz")
 
 errors = []
 
@@ -78,25 +83,21 @@ for _ in range(args.n_samples):
     if postprocessor.flipped:
         image = imgaug.augmenters.Fliplr(1).augment_image(image)
 
-    cropped_image = preprocess_image(image, convert_to_rgb=False, normalize=False)
-    encoded = autoencoder.encode_from_raw_image(input_image)
-    reconstructed_image = autoencoder.decode(encoded)[0]
+    final_images = []
+    for autoencoder in autoencoders:
+        cropped_image = preprocess_image(image, convert_to_rgb=False, normalize=False)
+        encoded = autoencoder.encode_from_raw_image(input_image)
+        reconstructed_image = autoencoder.decode(encoded)[0]
 
-    error = np.mean((cropped_image - reconstructed_image) ** 2)
-    errors.append(error)
-    # Baselines error:
-    # error = np.mean((cropped_image - np.zeros_like(cropped_image)) ** 2)
-    # print("Error {:.2f}".format(error))
+        error = np.mean((cropped_image - reconstructed_image) ** 2)
+        errors.append(error)
+        
+        three_imgs = np.vstack((image,cropped_image,reconstructed_image))
+        final_images.append(three_imgs)
 
-    # Plot reconstruction
-    cv2.imshow("Original", image)
-    # TODO: plot cropped and resized image
-    cv2.imshow("Cropped", cropped_image)
+    final_images = np.hstack(final_images)
 
-    if augmenter is not None:
-        cv2.imshow("Augmented", input_image)
-
-    cv2.imshow("Reconstruction", reconstructed_image)
+    cv2.imshow( f"Orig,Crop,Recon - {args.ae_path}", final_images)
     # stop if escape is pressed
     k = cv2.waitKey(0) & 0xFF
     if k == 27:

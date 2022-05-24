@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import gym
 import numpy as np
+import cv2
 
 from ae.autoencoder import load_ae
 
@@ -26,8 +27,20 @@ class AutoencoderWrapper(gym.Wrapper):
 
     def reset(self) -> np.ndarray:
         # Important: Convert to BGR to match OpenCV convention
-        return self.ae.encode_from_raw_image(self.env.reset()[:, :, ::-1]).flatten()
+        encoded_image = self.ae.encode_from_raw_image(self.env.reset()[:, :, ::-1])
+        #new_obs = np.concatenate( [ encoded_image.flatten(), [0.0] ] )
+        return encoded_image.flatten()
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, Dict[str, Any]]:
         obs, reward, done, infos = self.env.step(action)
+        #encoded_image = self.ae.encode_from_raw_image(obs[:, :, ::-1])
+        #reconstructed_image = self.ae.decode( encoded_image )[0]
+        #cv2.imshow( "Original image", encoded_image[:, :, ::-1] )
+        # cv2.imshow( "Reconstructed image", reconstructed_image )
+        # k = cv2.waitKey(0) & 0xFF
+        # if k == 27:
+        #     pass
+
+        #speed = infos['speed']
+        #new_obs = np.concatenate( [ self.ae.encode_from_raw_image(obs[:, :, ::-1]).flatten(), [speed] ] )
         return self.ae.encode_from_raw_image(obs[:, :, ::-1]).flatten(), reward, done, infos
