@@ -80,6 +80,8 @@ for _ in range(args.n_samples):
 
     cropped_image = preprocess_image(image, convert_to_rgb=False, normalize=False)
     encoded = autoencoder.encode_from_raw_image(input_image)
+    encoded = autoencoder.encode(cropped_image[:, :, ::-1])
+
     reconstructed_image = autoencoder.decode(encoded)[0]
 
     error = np.mean((cropped_image - reconstructed_image) ** 2)
