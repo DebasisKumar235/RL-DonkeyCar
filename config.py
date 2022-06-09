@@ -4,7 +4,7 @@
 CAMERA_HEIGHT = 120
 CAMERA_WIDTH = 160
 
-MARGIN_TOP = CAMERA_HEIGHT // 3
+MARGIN_TOP = CAMERA_HEIGHT // 2
 # MARGIN_TOP = 0
 
 # ============ End of DonkeyCar Config ============ #

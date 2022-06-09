@@ -44,6 +44,7 @@ class AutoencoderWrapper(gym.Wrapper):
 
     def reset(self) -> np.ndarray:
         # Important: Convert to BGR to match OpenCV convention
+<<<<<<< HEAD
         ##encoded_image = self.ae.encode_from_raw_image(self.env.reset()[:, :, ::-1])
         #new_obs = np.concatenate( [ encoded_image.flatten(), [0.0] ] )
         ##return encoded_image.flatten()
@@ -78,6 +79,11 @@ class AutoencoderWrapper(gym.Wrapper):
                 
             return np.hstack( stack )
             #return np.hstack( [ encoded ] * max_num_stacked_images )
+=======
+        encoded_image = self.ae.encode_from_raw_image(self.env.reset()[:, :, ::-1])
+        #new_obs = np.concatenate( [ encoded_image.flatten(), [0.0] ] )
+        return encoded_image.flatten()
+>>>>>>> ce47080bba7fa1a8436a61c918af1d34ab5aea4a
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, Dict[str, Any]]:
         obs, reward, done, infos = self.env.step(action)
@@ -91,6 +97,7 @@ class AutoencoderWrapper(gym.Wrapper):
 
         #speed = infos['speed']
         #new_obs = np.concatenate( [ self.ae.encode_from_raw_image(obs[:, :, ::-1]).flatten(), [speed] ] )
+<<<<<<< HEAD
         return self.___get_observation( obs ), reward, done, infos
 
 
@@ -146,3 +153,6 @@ class AutoencoderWrapper2:
 
     def decode_encoding( self, encoded ):
         return self.ae.decode(encoded)[0]
+=======
+        return self.ae.encode_from_raw_image(obs[:, :, ::-1]).flatten(), reward, done, infos
+>>>>>>> ce47080bba7fa1a8436a61c918af1d34ab5aea4a
