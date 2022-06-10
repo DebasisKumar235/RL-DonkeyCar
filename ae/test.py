@@ -83,19 +83,12 @@ for _ in range(args.n_samples):
     if postprocessor.flipped:
         image = imgaug.augmenters.Fliplr(1).augment_image(image)
 
-<<<<<<< HEAD
-    cropped_image = preprocess_image(image, convert_to_rgb=False, normalize=False)
-    encoded = autoencoder.encode_from_raw_image(input_image)
-    encoded = autoencoder.encode(cropped_image[:, :, ::-1])
 
-    reconstructed_image = autoencoder.decode(encoded)[0]
-=======
     final_images = []
     for autoencoder in autoencoders:
         cropped_image = preprocess_image(image, convert_to_rgb=False, normalize=False)
         encoded = autoencoder.encode_from_raw_image(input_image)
         reconstructed_image = autoencoder.decode(encoded)[0]
->>>>>>> ce47080bba7fa1a8436a61c918af1d34ab5aea4a
 
         error = np.mean((cropped_image - reconstructed_image) ** 2)
         errors.append(error)
