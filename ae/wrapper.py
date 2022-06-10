@@ -67,7 +67,7 @@ class AutoencoderWrapper(gym.Wrapper):
         self.stack_of_images.append( encoded )
 
         if len( self.stack_of_images ) == max_num_stacked_images:
-            return np.hstack( [self.stack_of_images[-1], self.stack_of_images[0]] )
+            return np.hstack( [ self.stack_of_images[0], self.stack_of_images[-1] ] )
         else:
             stack = [encoded] #self.stack_of_images.copy()
 
@@ -126,7 +126,7 @@ class AutoencoderWrapper2:
             #res = np.hstack( self.stack_of_images )
             #return np.expand_dims( res, axis=0 ), cropped_img
             #return self.stack_of_images, cropped_img
-            return [self.stack_of_images[-1], self.stack_of_images[0]], cropped_img
+            return [self.stack_of_images[0], self.stack_of_images[-1]], cropped_img
         else:
             # stack = self.stack_of_images.copy()
 
